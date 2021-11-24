@@ -1,8 +1,3 @@
-# YOLOv3 🚀 by Ultralytics, GPL-3.0 license
-"""
-Plotting utils
-"""
-
 import math
 import os
 from copy import copy
@@ -122,13 +117,6 @@ class Annotator:
 
 
 def feature_visualization(x, module_type, stage, n=32, save_dir=Path('runs/detect/exp')):
-    """
-    x:              Features to be visualized
-    module_type:    Module type
-    stage:          Module stage within model
-    n:              Maximum number of feature maps to plot
-    save_dir:       Directory to save results
-    """
     if 'Detect' not in module_type:
         batch, channels, height, width = x.shape  # batch, channels, height, width
         if height > 1 and width > 1:
@@ -324,8 +312,8 @@ def plot_val_study(file='', dir='', x=None):  # from utils.plots import *; plot_
     plt.savefig(f, dpi=300)
 
 
-@try_except  # known issue https://github.com/ultralytics/yolov5/issues/5395
-@Timeout(30)  # known issue https://github.com/ultralytics/yolov5/issues/5611
+@try_except
+@Timeout(30)
 def plot_labels(labels, names=(), save_dir=Path('')):
     # plot dataset labels
     LOGGER.info(f"Plotting labels to {save_dir / 'labels.jpg'}... ")

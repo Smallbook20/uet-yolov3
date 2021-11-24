@@ -1,15 +1,3 @@
-# YOLOv3 🚀 by Ultralytics, GPL-3.0 license
-"""
-TensorFlow, Keras and TFLite versions of
-Authored by https://github.com/zldrobit in PR https://github.com/ultralytics/yolov5/pull/1127
-
-Usage:
-    $ python models/tf.py --weights yolov3.pt
-
-Export:
-    $ python path/to/export.py --weights yolov3.pt --include saved_model pb tflite tfjs
-"""
-
 import argparse
 import logging
 import sys
@@ -66,8 +54,6 @@ class TFConv(keras.layers.Layer):
         super().__init__()
         assert g == 1, "TF v2.2 Conv2D does not support 'groups' argument"
         assert isinstance(k, int), "Convolution with multiple kernels are not allowed."
-        # TensorFlow convolution padding is inconsistent with PyTorch (e.g. k=3 s=2 'SAME' padding)
-        # see https://stackoverflow.com/questions/52975843/comparing-conv2d-with-padding-between-tensorflow-and-pytorch
 
         conv = keras.layers.Conv2D(
             c2, k, s, 'SAME' if s == 1 else 'VALID', use_bias=False if hasattr(w, 'bn') else True,
@@ -133,7 +119,6 @@ class TFConv2d(keras.layers.Layer):
 
 
 class TFBottleneckCSP(keras.layers.Layer):
-    # CSP Bottleneck https://github.com/WongKinYiu/CrossStagePartialNetworks
     def __init__(self, c1, c2, n=1, shortcut=True, g=1, e=0.5, w=None):
         # ch_in, ch_out, number, shortcut, groups, expansion
         super().__init__()
@@ -153,7 +138,6 @@ class TFBottleneckCSP(keras.layers.Layer):
 
 
 class TFC3(keras.layers.Layer):
-    # CSP Bottleneck with 3 convolutions
     def __init__(self, c1, c2, n=1, shortcut=True, g=1, e=0.5, w=None):
         # ch_in, ch_out, number, shortcut, groups, expansion
         super().__init__()
@@ -250,10 +234,6 @@ class TFUpsample(keras.layers.Layer):
         super().__init__()
         assert scale_factor == 2, "scale_factor must be 2"
         self.upsample = lambda x: tf.image.resize(x, (x.shape[1] * 2, x.shape[2] * 2), method=mode)
-        # self.upsample = keras.layers.UpSampling2D(size=scale_factor, interpolation=mode)
-        # with default arguments: align_corners=False, half_pixel_centers=False
-        # self.upsample = lambda x: tf.raw_ops.ResizeNearestNeighbor(images=x,
-        #                                                            size=(x.shape[1] * 2, x.shape[2] * 2))
 
     def call(self, inputs):
         return self.upsample(inputs)
@@ -364,12 +344,7 @@ class TFModel:
                     boxes, scores, topk_per_class, topk_all, iou_thres, conf_thres, clip_boxes=False)
                 return nms, x[1]
 
-        return x[0]  # output only first tensor [1,6300,85] = [xywh, conf, class0, class1, ...]
-        # x = x[0][0]  # [x(1,6300,85), ...] to x(6300,85)
-        # xywh = x[..., :4]  # x(6300,4) boxes
-        # conf = x[..., 4:5]  # x(6300,1) confidences
-        # cls = tf.reshape(tf.cast(tf.argmax(x[..., 5:], axis=1), tf.float32), (-1, 1))  # x(6300,1)  classes
-        # return tf.concat([conf, cls, xywh], 1)
+        return x[0]
 
     @staticmethod
     def _xywh2xyxy(xywh):

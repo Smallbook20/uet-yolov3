@@ -1,8 +1,3 @@
-# YOLOv3 🚀 by Ultralytics, GPL-3.0 license
-"""
-Common modules
-"""
-
 import json
 import math
 import platform
@@ -317,9 +312,9 @@ class DetectMultiBackend(nn.Module):
             check_requirements(('onnx', 'onnxruntime-gpu' if torch.has_cuda else 'onnxruntime'))
             import onnxruntime
             session = onnxruntime.InferenceSession(w, None)
-        else:  # TensorFlow model (TFLite, pb, saved_model)
+        else:
             import tensorflow as tf
-            if pb:  # https://www.tensorflow.org/guide/migrate#a_graphpb_or_graphpbtxt
+            if pb:
                 def wrap_frozen_graph(gd, inputs, outputs):
                     x = tf.compat.v1.wrap_function(lambda: tf.compat.v1.import_graph_def(gd, name=""), [])  # wrapped
                     return x.prune(tf.nest.map_structure(x.graph.as_graph_element, inputs),

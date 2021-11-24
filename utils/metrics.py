@@ -1,8 +1,3 @@
-# YOLOv3 🚀 by Ultralytics, GPL-3.0 license
-"""
-Model validation metrics
-"""
-
 import math
 import warnings
 from pathlib import Path
@@ -19,20 +14,7 @@ def fitness(x):
 
 
 def ap_per_class(tp, conf, pred_cls, target_cls, plot=False, save_dir='.', names=()):
-    """ Compute the average precision, given the recall and precision curves.
-    Source: https://github.com/rafaelpadilla/Object-Detection-Metrics.
-    # Arguments
-        tp:  True positives (nparray, nx1 or nx10).
-        conf:  Objectness value from 0-1 (nparray).
-        pred_cls:  Predicted object classes (nparray).
-        target_cls:  True object classes (nparray).
-        plot:  Plot precision-recall curve at mAP@0.5
-        save_dir:  Plot save directory
-    # Returns
-        The average precision as computed in py-faster-rcnn.
-    """
 
-    # Sort by objectness
     i = np.argsort(-conf)
     tp, conf, pred_cls = tp[i], conf[i], pred_cls[i]
 
@@ -84,15 +66,7 @@ def ap_per_class(tp, conf, pred_cls, target_cls, plot=False, save_dir='.', names
 
 
 def compute_ap(recall, precision):
-    """ Compute the average precision, given the recall and precision curves
-    # Arguments
-        recall:    The recall curve (list)
-        precision: The precision curve (list)
-    # Returns
-        Average precision, precision curve, recall curve
-    """
 
-    # Append sentinel values to beginning and end
     mrec = np.concatenate(([0.0], recall, [1.0]))
     mpre = np.concatenate(([1.0], precision, [0.0]))
 
@@ -112,7 +86,6 @@ def compute_ap(recall, precision):
 
 
 class ConfusionMatrix:
-    # Updated version of https://github.com/kaanakan/object_detection_confusion_matrix
     def __init__(self, nc, conf=0.25, iou_thres=0.45):
         self.matrix = np.zeros((nc + 1, nc + 1))
         self.nc = nc  # number of classes
@@ -120,15 +93,7 @@ class ConfusionMatrix:
         self.iou_thres = iou_thres
 
     def process_batch(self, detections, labels):
-        """
-        Return intersection-over-union (Jaccard index) of boxes.
-        Both sets of boxes are expected to be in (x1, y1, x2, y2) format.
-        Arguments:
-            detections (Array[N, 6]), x1, y1, x2, y2, conf, class
-            labels (Array[M, 5]), class, x1, y1, x2, y2
-        Returns:
-            None, updates confusion matrix accordingly
-        """
+
         detections = detections[detections[:, 4] > self.conf]
         gt_classes = labels[:, 0].int()
         detection_classes = detections[:, 5].int()
@@ -190,7 +155,6 @@ class ConfusionMatrix:
 
 
 def bbox_iou(box1, box2, x1y1x2y2=True, GIoU=False, DIoU=False, CIoU=False, eps=1e-7):
-    # Returns the IoU of box1 to box2. box1 is 4, box2 is nx4
     box2 = box2.T
 
     # Get the coordinates of bounding boxes
@@ -235,18 +199,6 @@ def bbox_iou(box1, box2, x1y1x2y2=True, GIoU=False, DIoU=False, CIoU=False, eps=
 
 
 def box_iou(box1, box2):
-    # https://github.com/pytorch/vision/blob/master/torchvision/ops/boxes.py
-    """
-    Return intersection-over-union (Jaccard index) of boxes.
-    Both sets of boxes are expected to be in (x1, y1, x2, y2) format.
-    Arguments:
-        box1 (Tensor[N, 4])
-        box2 (Tensor[M, 4])
-    Returns:
-        iou (Tensor[N, M]): the NxM matrix containing the pairwise
-            IoU values for every element in boxes1 and boxes2
-    """
-
     def box_area(box):
         # box = 4xn
         return (box[2] - box[0]) * (box[3] - box[1])
@@ -260,11 +212,6 @@ def box_iou(box1, box2):
 
 
 def bbox_ioa(box1, box2, eps=1E-7):
-    """ Returns the intersection over box2 area given box1, box2. Boxes are x1y1x2y2
-    box1:       np.array of shape(4)
-    box2:       np.array of shape(nx4)
-    returns:    np.array of shape(n)
-    """
 
     box2 = box2.transpose()
 
