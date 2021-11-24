@@ -1,8 +1,3 @@
-# YOLOv3 🚀 by Ultralytics, GPL-3.0 license
-"""
-Dataloaders and dataset utils
-"""
-
 import glob
 import hashlib
 import json
@@ -67,13 +62,6 @@ def exif_size(img):
 
 
 def exif_transpose(image):
-    """
-    Transpose a PIL image accordingly if it has an EXIF Orientation tag.
-    Inplace version of https://github.com/python-pillow/Pillow/blob/master/src/PIL/ImageOps.py exif_transpose()
-
-    :param image: The image to transpose.
-    :return: An image.
-    """
     exif = image.getexif()
     orientation = exif.get(0x0112, 1)  # default 1
     if orientation > 1:
@@ -123,11 +111,6 @@ def create_dataloader(path, imgsz, batch_size, stride, single_cls=False, hyp=Non
 
 
 class InfiniteDataLoader(dataloader.DataLoader):
-    """ Dataloader that reuses workers
-
-    Uses same syntax as vanilla DataLoader
-    """
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         object.__setattr__(self, 'batch_sampler', _RepeatSampler(self.batch_sampler))
@@ -142,11 +125,6 @@ class InfiniteDataLoader(dataloader.DataLoader):
 
 
 class _RepeatSampler:
-    """ Sampler that repeats forever
-
-    Args:
-        sampler (Sampler)
-    """
 
     def __init__(self, sampler):
         self.sampler = sampler
@@ -935,15 +913,6 @@ def verify_image_label(args):
 
 
 def dataset_stats(path='coco128.yaml', autodownload=False, verbose=False, profile=False, hub=False):
-    """ Return dataset statistics dictionary with images and instances counts per split per class
-    To run in parent directory: export PYTHONPATH="$PWD/yolov3"
-    Usage1: from utils.datasets import *; dataset_stats('coco128.yaml', autodownload=True)
-    Usage2: from utils.datasets import *; dataset_stats('../datasets/coco128_with_yaml.zip')
-    Arguments
-        path:           Path to data.yaml or data.zip (with data.yaml inside data.zip)
-        autodownload:   Attempt to download dataset if not found locally
-        verbose:        Print stats dictionary
-    """
 
     def round_labels(labels):
         # Update labels to integer class and 6 decimal place floats

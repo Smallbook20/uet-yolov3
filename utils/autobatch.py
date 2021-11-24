@@ -1,8 +1,3 @@
-# YOLOv3 🚀 by Ultralytics, GPL-3.0 license
-"""
-Auto-batch utils
-"""
-
 from copy import deepcopy
 
 import numpy as np
@@ -20,13 +15,6 @@ def check_train_batch_size(model, imgsz=640):
 
 
 def autobatch(model, imgsz=640, fraction=0.9, batch_size=16):
-    # Automatically estimate best batch size to use `fraction` of available CUDA memory
-    # Usage:
-    #     import torch
-    #     from utils.autobatch import autobatch
-    #     model = torch.hub.load('ultralytics/yolov3', 'yolov3', autoshape=False)
-    #     print(autobatch(model))
-
     prefix = colorstr('AutoBatch: ')
     LOGGER.info(f'{prefix}Computing optimal batch size for --imgsz {imgsz}')
     device = next(model.parameters()).device  # get model device
